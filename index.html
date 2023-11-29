@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.staticfile.org/popper.js/2.9.3/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">
+    <link rel="canonical" href="https://v5.getbootstrap.com/docs/5.0/examples/sign-in/">
+    <link rel="canonical" href="https://v5.getbootstrap.com/docs/5.0/examples/dashboard/">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <title>Gene drive playground - Profile for Jinyu Zhu</title>
+</head>
+
+<body>
+    <div class="container-fluid pt-5 pb-3 bg-light text-dark text-center">
+        <h1 class="pb-2">Gene drive playground</h1>
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a class="nav-link text-dark" href="..">Home</a></li>
+                <li class="nav-item"><a class="nav-link active bg-dark" aria-current="page" href=".">Playground</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container pt-3">
+        <p>This is an online simulation interface for different types of gene drive and other population genetics control strategies. (Still updating ...)</p>
+
+        <p>Simulation models are written in JavaScript. Plots are powered by <a href="https://www.chartjs.org/">Chart.js</a>.</p>
+    </div>
+
+    <!--
+        一些思考
+        1. 是否可以并行？
+        项目间的并行显然应该被支持。单个项目同时跑多个实例呢？
+        如果并行，如何控制？
+    -->
+
+    <!--
+    <div class="container pt-3">
+        <h2>Sterile insect technique (SIT) panmictic discrete model</h2>
+        <button class="btn btn-success" id="sit-run" onclick="homing_suppression_drive_panmictic_demo()">Run simulation</button>
+        <button class="btn btn-success" id="sit-step" onclick="homing_suppression_drive_panmictic_demo()">Step forward</button>
+        <button class="btn btn-success" id="sit-reset" onclick="homing_suppression_drive_panmictic_demo()">Reset</button>
+        <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="sit_demo_chart" width=400 height=400></canvas>
+        </div>
+        <div id="sit_demo_result" style="font-family: 'Courier New', Courier, monospace; word-break:break-all;overflow:hidden;"></div>
+    </div>
+    -->
+
+    <div class="container pt-3">
+        <h2>Homing suppression drive (panmictic discrete generation model)</h2>
+        <div class="d-flex">
+            <div class="p-2">
+                <div class="chart-container">
+                    <!--style="position: relative; height:40vh; width:80vw"-->
+                    <canvas id="homing_suppression_drive_panmictic_demo_chart" width=300 height=300></canvas>
+                </div>
+            </div>
+            <div class="p-2 flex-grow-1">
+                <div class="card">
+                    <div class="card-header">
+                        <ul id="hsdp-tabs" class="nav nav-pills" role="tablist">
+                            <li class="nav-item"><a class="nav-link active" href="#hsdp-principles" role="tab" data-bs-toggle="pill">Basic Principles</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#hsdp-simulation" role="tab" data-bs-toggle="pill">Simulation</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#hsdp-references" role="tab" data-bs-toggle="pill">References</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div id="hsdp-tab-content" class="tab-content">
+                            <div class="tab-pane active" id="hsdp-principles">
+                                <ul>
+                                    <li>The homing drive targets a haplosufficient female fertility gene and convert it into the drive in germline cells. Females with no such functional fertility gene are sterile; otherwise they are fertile. </li>
+                                    <li>If drive conversion does not occur, the targetted wild-type allele may become nonfunctional (<em>r2</em>) or functional (<em>r1</em>) resistance alleles. </li>
+                                    <li>All individuals mate randomly and the number of their offspring is determined by density-dependent competition. Generations are not overlapping. </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane " id="hsdp-simulation">
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-3">
+                                        <label for="hsdp-dcr" class="col-form-label">Drive conversion rate</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="hsdp-dcr" class="form-select form-control">
+                                            <option>0.5</option>
+                                            <option>0.6</option>
+                                            <option>0.7</option>
+                                            <option selected>0.8</option>
+                                            <option>0.9</option>
+                                            <option>1.0</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="hsdp-fit" class="col-form-label">Drive fitness</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="hsdp-fit" class="form-select form-control">
+                                            <option>0.5</option>
+                                            <option>0.6</option>
+                                            <option>0.7</option>
+                                            <option selected>0.8</option>
+                                            <option>0.9</option>
+                                            <option>1.0</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-3">
+                                        <label for="hsdp-ldgr" class="col-form-label">Low-density growth rate</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="hsdp-ldgr" class="form-select form-control">
+                                            <option>5</option>
+                                            <option selected>6</option>
+                                            <option>7</option>
+                                            <option>8</option>
+                                            <option>9</option>
+                                            <option>10</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="hsdp-capacity" class="col-form-label">Carrying capacity</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="hsdp-capacity" class="form-select form-control">
+                                            <option>100</option>
+                                            <option>500</option>
+                                            <option>1000</option>
+                                            <option selected>2500</option>
+                                            <option>5000</option>
+                                            <option>10000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-3">
+                                        <label for="hsdp-drop" class="col-form-label">Drop ratio</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="hsdp-drop" class="form-select form-control">
+                                            <option>0.6</option>
+                                            <option>0.8</option>
+                                            <option selected>1.0</option>
+                                            <option>1.2</option>
+                                            <option>1.4</option>
+                                            <option>1.6</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="hsdp-r2" class="col-form-label">Late <em>r2</em> formation rate</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="hsdp-r2" class="form-select form-control">
+                                            <option>0</option>
+                                            <option selected>0.1</option>
+                                            <option>0.2</option>
+                                            <option>0.3</option>
+                                            <option>0.4</option>
+                                            <option>0.5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success" id="hsdp-run" onclick="homing_suppression_drive_panmictic_demo()">Run simulation</button>
+                            </div>
+                            <div class="tab-pane " id="hsdp-references">
+                                <ol>
+                                    <li>
+                                        Champer, J., Kim, I. K., Champer, S. E., Clark, A. G., & Messer, P. W. (2021). Suppression gene drive in continuous space can result in unstable persistence of both drive and wild-type alleles. Molecular ecology, 30(4), 1086–1101.
+                                        <a href="https://doi.org/10.1111/mec.15788" target="_blank">https://doi.org/10.1111/mec.15788</a>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--<button class="btn btn-success" id="hsdp-step" onclick="homing_suppression_drive_panmictic_demo()">Step forward</button>
+        <button class="btn btn-success" id="hsdp-reset" onclick="homing_suppression_drive_panmictic_demo()">Reset</button>-->
+
+        <div id="homing_suppression_drive_panmictic_demo_result" style="font-family: 'Courier New', Courier, monospace; word-break:break-all;overflow:hidden;"></div>
+    </div>
+
+    <div class="container pt-3">
+        <h2>RIDL-drive (panmictic discrete generation model)</h2>
+        <div class="d-flex">
+            <div class="p-2">
+                <div class="chart-container">
+                    <!--style="position: relative; height:40vh; width:80vw"-->
+                    <canvas id="ridl_drive_panmictic_demo_chart" width=300 height=300></canvas>
+                </div>
+            </div>
+            <div class="p-2 flex-grow-1">
+                <div class="card">
+                    <div class="card-header">
+                        <ul id="ridd-tabs" class="nav nav-pills" role="tablist">
+                            <li class="nav-item"><a class="nav-link active" href="#ridd-principles" role="tab" data-bs-toggle="pill">Basic Principles</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#ridd-simulation" role="tab" data-bs-toggle="pill">Simulation</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#ridd-references" role="tab" data-bs-toggle="pill">References</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div id="ridd-tab-content" class="tab-content">
+                            <div class="tab-pane active" id="ridd-principles">
+                                <ul>
+                                    <li>A female-specific dominant lethal gene is integrated into a homing drive. </li>
+                                    <li>If drive conversion does not occur, the targetted wild-type allele may become a resistance allele. </li>
+                                    <li>All individuals mate randomly and the number of their offspring is determined by density-dependent competition. Generations are not overlapping. </li>
+                                    <li>Male drive homozygoutes are released every generation. </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane " id="ridd-simulation">
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-3">
+                                        <label for="ridd-dcr" class="col-form-label">Drive conversion rate</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="ridd-dcr" class="form-select form-control">
+                                            <option>0</option>
+                                            <option>0.1</option>
+                                            <option>0.2</option>
+                                            <option>0.3</option>
+                                            <option>0.4</option>
+                                            <option>0.5</option>
+                                            <option>0.6</option>
+                                            <option>0.7</option>
+                                            <option selected>0.8</option>
+                                            <option>0.9</option>
+                                            <option>1.0</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="ridd-fit" class="col-form-label">Drive fitness</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="ridd-fit" class="form-select form-control">
+                                            <option>0</option>
+                                            <option>0.1</option>
+                                            <option>0.2</option>
+                                            <option>0.3</option>
+                                            <option>0.4</option>
+                                            <option>0.5</option>
+                                            <option>0.6</option>
+                                            <option>0.7</option>
+                                            <option selected>0.8</option>
+                                            <option>0.9</option>
+                                            <option>1.0</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-3">
+                                        <label for="ridd-ldgr" class="col-form-label">Low-density growth rate</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="ridd-ldgr" class="form-select form-control">
+                                            <option>5</option>
+                                            <option selected>6</option>
+                                            <option>7</option>
+                                            <option>8</option>
+                                            <option>9</option>
+                                            <option>10</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="ridd-capacity" class="col-form-label">Carrying capacity</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="ridd-capacity" class="form-select form-control">
+                                            <option>100</option>
+                                            <option>500</option>
+                                            <option>1000</option>
+                                            <option selected>2500</option>
+                                            <option>5000</option>
+                                            <option>10000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-3">
+                                        <label for="ridd-drop" class="col-form-label">Drop ratio</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="ridd-drop" class="form-select form-control">
+                                            <option>0.025</option>
+                                            <option selected>0.050</option>
+                                            <option>0.075</option>
+                                            <option>0.100</option>
+                                            <option>0.125</option>
+                                            <option>0.150</option>
+                                            <option>0.175</option>
+                                            <option>0.200</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="ridd-r2" class="col-form-label">Late resistance formation rate</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <select id="ridd-r2" class="form-select form-control">
+                                            <option selected>0</option>
+                                            <option>1e-3</option>
+                                            <option>3e-3</option>
+                                            <option>1e-2</option>
+                                            <option>3e-2</option>
+                                            <option>0.1</option>
+                                            <option>0.3</option>
+                                            <option>1.0</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success" id="ridd-run" onclick="ridl_drive_panmictic_demo()">Run simulation</button>
+                            </div>
+                            <div class="tab-pane " id="ridd-references">
+                                <ol>
+                                    <li>
+                                        Champer, J., Kim, I. K., Champer, S. E., Clark, A. G., & Messer, P. W. (2021). Suppression gene drive in continuous space can result in unstable persistence of both drive and wild-type alleles. Molecular ecology, 30(4), 1086–1101.
+                                        <a href="https://doi.org/10.1111/mec.15788" target="_blank">https://doi.org/10.1111/mec.15788</a>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--<button class="btn btn-success" id="hsdp-step" onclick="homing_suppression_drive_panmictic_demo()">Step forward</button>
+        <button class="btn btn-success" id="hsdp-reset" onclick="homing_suppression_drive_panmictic_demo()">Reset</button>-->
+
+        <div id="ridl_drive_panmictic_demo_result" style="font-family: 'Courier New', Courier, monospace; word-break:break-all;overflow:hidden;"></div>
+    </div>
+
+
+</body>
+
+<script src="./chart_config_hsdp.js"></script>
+<script src="./demo_hsdp.js"></script>
+<script src="./chart_config_ridd.js"></script>
+<script src="./demo_ridd.js"></script>
+
+</html>
