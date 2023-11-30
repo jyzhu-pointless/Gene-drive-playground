@@ -13,7 +13,10 @@
     <link rel="canonical" href="https://v5.getbootstrap.com/docs/5.0/examples/dashboard/">
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-    <title>Gene drive playground - Profile for Jinyu Zhu</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="./style.css">
+    <title>Gene drive playground</title>
 </head>
 
 <body>
@@ -21,40 +24,20 @@
         <h1 class="pb-2">Gene drive playground</h1>
         <div class="container">
             <ul class="nav nav-pills">
-                <li class="nav-item"><a class="nav-link active bg-dark" href=".">Home</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" aria-current="page" href="https://jyzhu-pointless.github.io/">About the author</a></li>
+                <li class="nav-item"><a class="nav-link active bg-dark" aria-current="page" href=".">Home</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" href="https://jyzhu-pointless.github.io/">About the author</a></li>
+                <li class="nav-item ms-auto"><a class="nav-link text-dark" href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAO__UJlf3dUQUVLTE5MWEhMQlBQVzJTRTZEWUhEV0NQWC4u" target="_blank">Feedback</a></li>
             </ul>
         </div>
     </div>
 
     <div class="container pt-3">
         <p>This is an online simulation interface for different types of gene drive and other population genetics control strategies. (Still updating ...)</p>
-
         <p>Simulation models are written in JavaScript. Plots are powered by <a href="https://www.chartjs.org/">Chart.js</a>.</p>
     </div>
 
-    <!--
-        一些思考
-        1. 是否可以并行？
-        项目间的并行显然应该被支持。单个项目同时跑多个实例呢？
-        如果并行，如何控制？
-    -->
-
-    <!--
     <div class="container pt-3">
-        <h2>Sterile insect technique (SIT) panmictic discrete model</h2>
-        <button class="btn btn-success" id="sit-run" onclick="homing_suppression_drive_panmictic_demo()">Run simulation</button>
-        <button class="btn btn-success" id="sit-step" onclick="homing_suppression_drive_panmictic_demo()">Step forward</button>
-        <button class="btn btn-success" id="sit-reset" onclick="homing_suppression_drive_panmictic_demo()">Reset</button>
-        <div class="chart-container align-items-center" style="position: relative; height:40vh; width:80vw">
-            <canvas id="sit_demo_chart" width=400 height=400></canvas>
-        </div>
-        <div id="sit_demo_result" style="font-family: 'Courier New', Courier, monospace; word-break:break-all;overflow:hidden;"></div>
-    </div>
-    -->
-
-    <div class="container pt-3">
-        <h2>Homing suppression drive (panmictic discrete generation model)</h2>
+        <h2 id="hsdp-title"><a class="locator" href="#hsdp-title">#</a> Female sterile homing drive - panmictic discrete generation model</h2>
         <div class="d-md-flex flex-md-row">
             <div class="p-2 align-self-sm-center">
                 <canvas id="homing_suppression_drive_panmictic_demo_chart" width=300 height=300></canvas>
@@ -64,6 +47,7 @@
                     <div class="card-header">
                         <ul id="hsdp-tabs" class="nav nav-pills" role="tablist">
                             <li class="nav-item"><a class="nav-link active" href="#hsdp-principles" role="tab" data-bs-toggle="pill">Basic Principles</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#hsdp-details" role="tab" data-bs-toggle="pill">Technical Details</a></li>
                             <li class="nav-item"><a class="nav-link" href="#hsdp-simulation" role="tab" data-bs-toggle="pill">Simulation</a></li>
                             <li class="nav-item"><a class="nav-link" href="#hsdp-references" role="tab" data-bs-toggle="pill">References</a></li>
                         </ul>
@@ -75,6 +59,16 @@
                                     <li>The homing drive targets a haplosufficient female fertility gene and convert it into the drive in germline cells. Females with no such functional fertility gene are sterile; otherwise they are fertile. </li>
                                     <li>If drive conversion does not occur, the targetted wild-type allele may become nonfunctional (<em>r2</em>) or functional (<em>r1</em>) resistance alleles. </li>
                                     <li>All individuals mate randomly and the number of their offspring is determined by density-dependent competition. Generations are not overlapping. </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane" id="hsdp-details">
+                                <ul>
+                                    <li><strong>Fecundity: </strong>\(\displaystyle \omega' = \frac{\omega \beta}{\frac{N(\beta-1)}{K}+1}\), where \(\beta\) is the low-density growth rate, \(N\) is the current population size, \(K\) is the carrying capacity,
+                                        and \(\omega\) is the genotype-based fitness of the female.</li>
+                                    <li><strong>Number of eggs per female: </strong>\(N=50\); <strong>birth rate of each egg: </strong>\(p=\omega / 25\).</li>
+                                    <li>If a wild-type allele is not converted to a drive allele, then it has a probability equal to the "late <em>r2</em> formation rate" to become <em>r2</em>. </li>
+                                    <li>If a wild-type allele is not converted to a drive allele or <em>r2</em> allele in male germline cells, then it has a \(0.01\) probability to become <em>r1</em>. (This fixed value will be changable in the future) </li>
+                                    <li>The simulation is allowed to run \(100\) generations; transgenes are only released in the first generation.</li>
                                 </ul>
                             </div>
                             <div class="tab-pane " id="hsdp-simulation">
@@ -176,16 +170,11 @@
             </div>
         </div>
 
-
-
-        <!--<button class="btn btn-success" id="hsdp-step" onclick="homing_suppression_drive_panmictic_demo()">Step forward</button>
-        <button class="btn btn-success" id="hsdp-reset" onclick="homing_suppression_drive_panmictic_demo()">Reset</button>-->
-
         <div id="homing_suppression_drive_panmictic_demo_result" style="font-family: 'Courier New', Courier, monospace; word-break:break-all;overflow:hidden;"></div>
     </div>
 
     <div class="container pt-3">
-        <h2>RIDL-drive (panmictic discrete generation model)</h2>
+        <h2 id="ridd-title"><a class="locator" href="#ridd-title">#</a> RIDL-drive (RIDDLE) - panmictic discrete generation model</h2>
         <div class="d-md-flex flex-md-row">
             <div class="p-2 align-self-sm-center">
                 <canvas id="ridl_drive_panmictic_demo_chart" width=300 height=300></canvas>
@@ -195,6 +184,7 @@
                     <div class="card-header">
                         <ul id="ridd-tabs" class="nav nav-pills" role="tablist">
                             <li class="nav-item"><a class="nav-link active" href="#ridd-principles" role="tab" data-bs-toggle="pill">Basic Principles</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#ridd-details" role="tab" data-bs-toggle="pill">Technical Details</a></li>
                             <li class="nav-item"><a class="nav-link" href="#ridd-simulation" role="tab" data-bs-toggle="pill">Simulation</a></li>
                             <li class="nav-item"><a class="nav-link" href="#ridd-references" role="tab" data-bs-toggle="pill">References</a></li>
                         </ul>
@@ -207,6 +197,16 @@
                                     <li>If drive conversion does not occur, the targetted wild-type allele may become a resistance allele. </li>
                                     <li>All individuals mate randomly and the number of their offspring is determined by density-dependent competition. Generations are not overlapping. </li>
                                     <li>Male drive homozygotes are released every generation. </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane" id="ridd-details">
+                                <ul>
+                                    <li><strong>Fecundity: </strong>\(\displaystyle \omega' = \frac{\omega \beta}{\frac{N_\text{f}(\beta-1)}{K/2}+1}\), where \(\beta\) is the low-density growth rate, \(N_\text{f}\) is the female population size, \(K\) is
+                                        the carrying capacity, and \(\omega\) is the genotype-based fitness of the female. This indicates that <strong>only females contribute to the density-dependent competition</strong>, and female drive carriers will
+                                        be counted in \(N_\text{f}\) representing they are involved in the competition.</li>
+                                    <li><strong>Number of eggs per female: </strong>\(N=50\); <strong>birth rate of each egg: </strong>\(p=\omega / 25\).</li>
+                                    <li>If a wild-type allele is not converted to a drive allele, then it has a probability equal to the "late resistance formation rate" to become resistant. Functional resistance <em>r1</em> is ignored in this model. </li>
+                                    <li>The simulation is allowed to run \(100\) generations.</li>
                                 </ul>
                             </div>
                             <div class="tab-pane " id="ridd-simulation">

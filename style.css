@@ -1,0 +1,7 @@
+.locator {
+    color: white;
+}
+
+.locator :hover {
+    color: #007bff;
+}
