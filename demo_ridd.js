@@ -25,7 +25,7 @@ function ridl_drive_panmictic_demo() {
     var drive_fitness = document.getElementById("ridd-fit").value;
     var max_attempts_to_find_a_mate = 10;
     var egg_num_per_female = 50;
-    var density_dependent_growth_curve = document.getElementById("ridd-curve").value;
+    // var density_dependent_growth_curve = document.getElementById("ridd-curve").value;
     var rescue_strategy = document.getElementById("ridd-rescue").value;
     var max_generations = 100;
     var cyc = 0;
@@ -134,20 +134,19 @@ function ridl_drive_panmictic_demo() {
 
         // console.log("not_sterile");
 
-        var fecundity = 0.0;
-        var competition_ratio = population_size / capacity;
+        var capacity_fitness_scaling = 0.0;
+        var competition_ratio = female_population_size / (capacity / 2);
+        console.log("competition_ratio: " + competition_ratio);
 
-        if (density_dependent_growth_curve == "Concave") {
-            fecundity = fitness(female_ind) * low_density_growth_rate / (((low_density_growth_rate - 1.0) * competition_ratio) + 1.0);
-        } else if (density_dependent_growth_curve == "Linear") {
-            fecundity = fitness(female_ind) * (-competition_ratio * (low_density_growth_rate - 1.0) + low_density_growth_rate);
-        } else if (density_dependent_growth_curve == "Convex") {
-            fecundity = fitness(female_ind) * (-(low_density_growth_rate - 1.0) * (competition_ratio - 1.0) * (competition_ratio + 1.0) + 1.0);
-        }
+        capacity_fitness_scaling = low_density_growth_rate / (((low_density_growth_rate - 1.0) * competition_ratio) + 1.0);
+
+        console.log("fitness: " + fitness(female_ind));
+
+        var p = fitness(female_ind) * capacity_fitness_scaling * 2 / egg_num_per_female;
 
         for (var i = 0; i < egg_num_per_female; i++) {
             var newborn = cross(female_ind, male_ind);
-            if (fecundity / 25.0 >= Math.random()) {
+            if (p >= Math.random()) {
                 // if rescue, do not create lethal individuals
                 // (1) if haplolethal drive:
                 if (rescue_strategy == "Haplolethal") {
@@ -376,7 +375,7 @@ function ridl_drive_panmictic_demo() {
             if (exit_flag) {
                 break;
             }
-            population_size = get_population_size();
+            female_population_size = population.female.length;
             // console.log("ok get size");
             mature();
             // console.log("ok mature");
