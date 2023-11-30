@@ -46,7 +46,7 @@
         <button class="btn btn-success" id="sit-run" onclick="homing_suppression_drive_panmictic_demo()">Run simulation</button>
         <button class="btn btn-success" id="sit-step" onclick="homing_suppression_drive_panmictic_demo()">Step forward</button>
         <button class="btn btn-success" id="sit-reset" onclick="homing_suppression_drive_panmictic_demo()">Reset</button>
-        <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+        <div class="chart-container align-items-center" style="position: relative; height:40vh; width:80vw">
             <canvas id="sit_demo_chart" width=400 height=400></canvas>
         </div>
         <div id="sit_demo_result" style="font-family: 'Courier New', Courier, monospace; word-break:break-all;overflow:hidden;"></div>
@@ -55,12 +55,9 @@
 
     <div class="container pt-3">
         <h2>Homing suppression drive (panmictic discrete generation model)</h2>
-        <div class="d-flex">
-            <div class="p-2">
-                <div class="chart-container">
-                    <!--style="position: relative; height:40vh; width:80vw"-->
-                    <canvas id="homing_suppression_drive_panmictic_demo_chart" width=300 height=300></canvas>
-                </div>
+        <div class="d-md-flex flex-md-row">
+            <div class="p-2 align-self-sm-center">
+                <canvas id="homing_suppression_drive_panmictic_demo_chart" width=300 height=300></canvas>
             </div>
             <div class="p-2 flex-grow-1">
                 <div class="card">
@@ -81,11 +78,11 @@
                                 </ul>
                             </div>
                             <div class="tab-pane " id="hsdp-simulation">
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-4">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="hsdp-dcr" class="col-form-label">Drive conversion rate</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="hsdp-dcr" class="form-select form-control">
                                             <option>0.5</option>
                                             <option>0.6</option>
@@ -95,10 +92,10 @@
                                             <option>1.0</option>
                                         </select>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="hsdp-fit" class="col-form-label">Drive fitness</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="hsdp-fit" class="form-select form-control">
                                             <option>0.5</option>
                                             <option>0.6</option>
@@ -108,12 +105,10 @@
                                             <option>1.0</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="hsdp-ldgr" class="col-form-label">Low-density growth rate</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="hsdp-ldgr" class="form-select form-control">
                                             <option>5.0</option>
                                             <option selected>6.0</option>
@@ -123,10 +118,10 @@
                                             <option>10.0</option>
                                         </select>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="hsdp-capacity" class="col-form-label">Carrying capacity</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="hsdp-capacity" class="form-select form-control">
                                             <option>100</option>
                                             <option>500</option>
@@ -136,12 +131,10 @@
                                             <option>10000</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="hsdp-drop" class="col-form-label">Drop ratio</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="hsdp-drop" class="form-select form-control">
                                             <option>0.6</option>
                                             <option>0.8</option>
@@ -151,10 +144,10 @@
                                             <option>1.6</option>
                                         </select>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="hsdp-r2" class="col-form-label">Late <em>r2</em> formation rate</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="hsdp-r2" class="form-select form-control">
                                             <option>0</option>
                                             <option selected>0.1</option>
@@ -165,7 +158,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button class="btn btn-success" id="hsdp-run" onclick="homing_suppression_drive_panmictic_demo()">Run simulation</button>
+                                <div class="pt-2">
+                                    <button class="btn btn-success" id="hsdp-run" onclick="homing_suppression_drive_panmictic_demo()">Run simulation</button>
+                                </div>
                             </div>
                             <div class="tab-pane " id="hsdp-references">
                                 <ol>
@@ -191,12 +186,9 @@
 
     <div class="container pt-3">
         <h2>RIDL-drive (panmictic discrete generation model)</h2>
-        <div class="d-flex">
-            <div class="p-2">
-                <div class="chart-container">
-                    <!--style="position: relative; height:40vh; width:80vw"-->
-                    <canvas id="ridl_drive_panmictic_demo_chart" width=300 height=300></canvas>
-                </div>
+        <div class="d-md-flex flex-md-row">
+            <div class="p-2 align-self-sm-center">
+                <canvas id="ridl_drive_panmictic_demo_chart" width=300 height=300></canvas>
             </div>
             <div class="p-2 flex-grow-1">
                 <div class="card">
@@ -218,11 +210,11 @@
                                 </ul>
                             </div>
                             <div class="tab-pane " id="ridd-simulation">
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-4">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-dcr" class="col-form-label">Drive conversion rate</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-dcr" class="form-select form-control">
                                             <option>0</option>
                                             <option>0.1</option>
@@ -237,10 +229,10 @@
                                             <option>1.0</option>
                                         </select>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-fit" class="col-form-label">Drive fitness</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-fit" class="form-select form-control">
                                             <option>0</option>
                                             <option>0.1</option>
@@ -255,12 +247,10 @@
                                             <option>1.0</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-ldgr" class="col-form-label">Low-density growth rate</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-ldgr" class="form-select form-control">
                                             <option>5.0</option>
                                             <option selected>6.0</option>
@@ -270,10 +260,10 @@
                                             <option>10.0</option>
                                         </select>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-capacity" class="col-form-label">Carrying capacity</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-capacity" class="form-select form-control">
                                             <option>100</option>
                                             <option>500</option>
@@ -283,12 +273,10 @@
                                             <option>10000</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-drop" class="col-form-label">Drop ratio</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-drop" class="form-select form-control">
                                             <option>0.025</option>
                                             <option selected>0.050</option>
@@ -300,10 +288,10 @@
                                             <option>0.200</option>
                                         </select>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-r2" class="col-form-label">Late resistance formation rate</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-r2" class="form-select form-control">
                                             <option selected>0</option>
                                             <option>1e-3</option>
@@ -315,13 +303,11 @@
                                             <option>1.0</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row g-4 align-items-center">
                                     <!--
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-curve" class="col-form-label">Density-dependent growth curve</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-curve" class="form-select form-control">
                                             <option selected>Concave</option>
                                             <option>Linear</option>
@@ -329,10 +315,10 @@
                                         </select>
                                     </div>
                                     -->
-                                    <div class="col-4">
+                                    <div class="col-lg-4 col-md-8">
                                         <label for="ridd-rescue" class="col-form-label">Rescue strategy</label>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-lg-2 col-md-4">
                                         <select id="ridd-rescue" class="form-select form-control">
                                             <option selected>None</option>
                                             <option>Recessive lethal</option>
@@ -340,7 +326,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button class="btn btn-success" id="ridd-run" onclick="ridl_drive_panmictic_demo()">Run simulation</button>
+                                <div class="pt-2">
+                                    <button class="btn btn-success" id="ridd-run" onclick="ridl_drive_panmictic_demo()">Run simulation</button>
+                                </div>
                             </div>
                             <div class="tab-pane " id="ridd-references">
                                 <ol>

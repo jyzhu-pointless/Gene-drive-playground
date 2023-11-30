@@ -1,111 +1,53 @@
 // A web framework for gene drive simulations
 // author: Jinyu Zhu
 
-// DOM
-function append_output(dom, text) {
-    new_output = document.createElement('p');
-    new_output.innerHTML = text;
-    dom.appendChild(new_output);
-}
-
-// Public variables and functions
-// Unused
-class simulation {
-    constructor() {
-        // Definition of "population":
-        // population = { male: [], female: [] };
-        // The subarray are filled with "individual"s
-        this.population = { "male": [], "female": [] };
-        this.cycle = 0; // generation
-        this.population_size = 0;
-    }
-    get population_size() { // getter method
-        this.population_size = population.male.length + population.female.length;
-        return this.population_size;
-    }
-};
-
-class individual {
-    constructor(sex, age, genotype) {
-        this.sex = sex;
-        this.age = age;
-        this.genotype = genotype;
-        this.tag = undefined; // This is useful in some situations where we need to record something.
-    }
-}
-var genotype_sort = { "d": 1, "R": 2, "r": 3, "+": 10 };
-
-var population = { "male": [], "female": [] };
-
-function get_population_size() {
-    return population.male.length + population.female.length;
-}
-
-var population_size = get_population_size();
-
-function random_int(minN, maxN) {
-    return minN + Math.round(Math.random() * (maxN - minN));
-}
-
-function sample_without_replace(list, sample_size) {
-    var ret = [];
-    for (var i = 0; i < sample_size; i++) {
-        ret[i] = random_int(0, list.length - 1);
-        for (var j = 0; j < i; j++) {
-            if (ret[i] == ret[j]) {
-                i--;
-                break;
-            }
-        }
-    }
-    for (var i = 0; i < sample_size; i++) {
-        ret[i] = list[ret[i]];
-    }
-    return ret;
-}
-
-function homing_suppression_drive_panmictic_demo() {
+function ridl_drive_overlapping_panmictic_demo() {
     // Female sterile homing drive without resistance
     // Clear output
     // Clear plot
     setTimeout(() => {
-        hsdp_output.innerHTML = "";
-        homing_supp_pan_chart.data.labels = [];
-        homing_supp_pan_chart.data.datasets.forEach(dataset => {
+        ridd_output.innerHTML = "";
+        ridd_pan_chart.data.labels = [];
+        ridd_pan_chart.data.datasets.forEach(dataset => {
             dataset.data = [];
         });
-        homing_supp_pan_chart.update();
+        ridd_pan_chart.update();
     }, 100);
 
     // Parameters
     population = { male: [], female: [] };
-    var capacity = document.getElementById("hsdp-capacity").value;
-    var release_size = capacity * document.getElementById("hsdp-drop").value;
-    var low_density_growth_rate = document.getElementById("hsdp-ldgr").value;
-    var drive_efficiency = document.getElementById("hsdp-dcr").value;
-    var resistance_2_formation_rate_if_not_converted = document.getElementById("hsdp-r2").value; // if not converted
-    var resistance_1_formation_rate_if_not_resistance_2 = 0.01; // if not to r2
-    var drive_fitness = document.getElementById("hsdp-fit").value;
+    var capacity = document.getElementById("ridd-capacity").value;
+    var release_size = capacity * document.getElementById("ridd-drop").value;
+    var low_density_growth_rate = document.getElementById("ridd-ldgr").value;
+    var drive_efficiency = document.getElementById("ridd-dcr").value;
+    var resistance_2_formation_rate_if_not_converted = document.getElementById("ridd-r2").value; // if not converted
+    // var resistance_1_formation_rate_if_not_resistance_2 = 0.01; // if not to r2
+    var drive_fitness = document.getElementById("ridd-fit").value;
     var max_attempts_to_find_a_mate = 10;
     var egg_num_per_female = 50;
-    var max_generations = 100;
+    var density_dependent_growth_curve = document.getElementById("ridd-curve").value;
+    var rescue_strategy = document.getElementById("ridd-rescue").value;
+    var max_weeks = 317;
     var cyc = 0;
     var exit_flag = 0;
     var stats = [];
+    // survival rates for overlapping generation
+    const male_survival_rate = [0.66666667, 0.50000000, 0.00000000];
+    const female_survival_rate = [0.83333333, 0.80000000, 0.75000000, 0.66666667, 0.50000000, 0.00000000];
     let out = "Initial parameters: " + JSON.stringify({
         "capacity": capacity,
         "release_size": release_size,
         "low_density_growth_rate": low_density_growth_rate,
         "drive_efficiency": drive_efficiency,
         "resistance_2_formation_rate_if_not_converted": resistance_2_formation_rate_if_not_converted,
-        "resistance_1_formation_rate_if_not_resistance_2": resistance_1_formation_rate_if_not_resistance_2,
+        // "resistance_1_formation_rate_if_not_resistance_2": resistance_1_formation_rate_if_not_resistance_2,
         "drive_fitness": drive_fitness,
         "max_attempts_to_find_a_mate": max_attempts_to_find_a_mate,
         "egg_num_per_female": egg_num_per_female,
-        "max_generations": max_generations
+        "max_weeks": max_weeks
     })
     console.log(out);
-    append_output(hsdp_output, out + "<br>");
+    append_output(ridd_output, out + "<br>");
 
     function initialize_population() {
         for (var i = 1; i <= capacity / 2; i++) {
@@ -116,18 +58,18 @@ function homing_suppression_drive_panmictic_demo() {
 
     function release_drive_carriers() {
         // Only male drive carriers are released
-        // Heterozygotes release
+        // Homozygotes release
         for (var i = 1; i <= release_size; i++) {
-            population.male.push(new individual("male", 0, "d+"));
+            population.male.push(new individual("male", 0, "dd"));
         }
     }
 
     function is_sterile(ind) {
-        // Only female drive homozygotes are sterile
+        // Female carriers are sterile
         if (ind == null || ind == undefined) {
             return true;
         }
-        if (ind.sex == "female" && (ind.genotype == "dd" || ind.genotype == "dr" || ind.genotype == "rr")) {
+        if (ind.sex == "female" && (ind.genotype == "dd" || ind.genotype == "d+" || ind.genotype == "dr")) {
             return true;
         }
         return false;
@@ -135,7 +77,7 @@ function homing_suppression_drive_panmictic_demo() {
 
     function fitness(ind) {
         if (ind.genotype == "dd") return drive_fitness;
-        if (ind.genotype == "d+" || ind.genotype == "dr" || ind.genotype == "dR") return Math.sqrt(drive_fitness);
+        if (ind.genotype == "d+" || ind.genotype == "dr") return Math.sqrt(drive_fitness);
         return 1.0;
     }
 
@@ -162,8 +104,6 @@ function homing_suppression_drive_panmictic_demo() {
                 return ["d", "d"];
             } else if (resistance_2_formation_rate_if_not_converted >= Math.random()) {
                 return ["d", "r"];
-            } else if (resistance_1_formation_rate_if_not_resistance_2 >= Math.random()) {
-                return ["d", "R"];
             } else return ["d", "+"];
         }
         return ind.genotype.split('');
@@ -196,11 +136,37 @@ function homing_suppression_drive_panmictic_demo() {
         if (is_sterile(male_ind)) return;
 
         // console.log("not_sterile");
-        var fecundity = fitness(female_ind) * low_density_growth_rate / (((low_density_growth_rate - 1.0) * population_size / capacity) + 1.0);
+
+        var capacity_fitness_scaling = 0.0;
+        var competition_ratio = female_population_size / (capacity / 2);
+        console.log("competition_ratio: " + competition_ratio);
+
+        capacity_fitness_scaling = low_density_growth_rate / (((low_density_growth_rate - 1.0) * competition_ratio) + 1.0);
+
+        console.log("fitness: " + fitness(female_ind));
+
+        var p = fitness(female_ind) * capacity_fitness_scaling * 2 / egg_num_per_female;
 
         for (var i = 0; i < egg_num_per_female; i++) {
             var newborn = cross(female_ind, male_ind);
-            if (fecundity / 25.0 >= Math.random()) {
+            if (p >= Math.random()) {
+                // if rescue, do not create lethal individuals
+                // (1) if haplolethal drive:
+                if (rescue_strategy == "Haplolethal") {
+                    if (newborn.genotype == "dr" || newborn.genotype == "r+" || newborn.genotype == "rr") {
+                        // do not create resistance carriers
+                        continue;
+                    }
+                }
+
+                // (2) if recessive lethal drive
+                if (rescue_strategy == "Recessive lethal") {
+                    if (newborn.genotype == "rr") {
+                        // do not create resistance homozygotes
+                        continue;
+                    }
+                }
+
                 if (newborn.sex == "male") {
                     population.male.push(newborn);
                 } else {
@@ -236,20 +202,20 @@ function homing_suppression_drive_panmictic_demo() {
             female_rw = 0,
             male_rr = 0,
             female_rr = 0,
-            male_dR = 0,
+            /*male_dR = 0,
             female_dR = 0,
             male_Rr = 0,
             female_Rr = 0,
             male_Rw = 0,
             female_Rw = 0,
             male_RR = 0,
-            female_RR = 0,
+            female_RR = 0,*/
             male_has_d = 0,
             female_has_d = 0,
             male_has_r = 0,
-            female_has_r = 0,
-            male_has_R = 0,
-            female_has_R = 0;
+            female_has_r = 0;
+        /*male_has_R = 0,
+        female_has_R = 0;*/
         population_size = get_population_size();
         for (var i in population.male) {
             if (population.male[i].genotype == "dd") male_dd++;
@@ -258,13 +224,13 @@ function homing_suppression_drive_panmictic_demo() {
             if (population.male[i].genotype == "dr") male_dr++;
             if (population.male[i].genotype == "rr") male_rr++;
             if (population.male[i].genotype == "r+") male_rw++;
-            if (population.male[i].genotype == "dR") male_dR++;
+            /*if (population.male[i].genotype == "dR") male_dR++;
             if (population.male[i].genotype == "Rr") male_Rr++;
             if (population.male[i].genotype == "R+") male_Rw++;
-            if (population.male[i].genotype == "RR") male_RR++;
+            if (population.male[i].genotype == "RR") male_RR++;*/
             if (population.male[i].genotype.indexOf("d") != -1) male_has_d++;
             if (population.male[i].genotype.indexOf("r") != -1) male_has_r++;
-            if (population.male[i].genotype.indexOf("R") != -1) male_has_R++;
+            //if (population.male[i].genotype.indexOf("R") != -1) male_has_R++;
         }
         for (var i in population.female) {
             if (population.female[i].genotype == "dd") female_dd++;
@@ -273,13 +239,13 @@ function homing_suppression_drive_panmictic_demo() {
             if (population.female[i].genotype == "dr") female_dr++;
             if (population.female[i].genotype == "rr") female_rr++;
             if (population.female[i].genotype == "r+") female_rw++;
-            if (population.female[i].genotype == "dR") female_dR++;
+            /*if (population.female[i].genotype == "dR") female_dR++;
             if (population.female[i].genotype == "Rr") female_Rr++;
             if (population.female[i].genotype == "R+") female_Rw++;
-            if (population.female[i].genotype == "RR") female_RR++;
+            if (population.female[i].genotype == "RR") female_RR++;*/
             if (population.female[i].genotype.indexOf("d") != -1) female_has_d++;
             if (population.female[i].genotype.indexOf("r") != -1) female_has_r++;
-            if (population.female[i].genotype.indexOf("R") != -1) female_has_R++;
+            //if (population.female[i].genotype.indexOf("R") != -1) female_has_R++;
         }
         var total_dd = male_dd + female_dd;
         var total_dw = male_dw + female_dw;
@@ -287,30 +253,30 @@ function homing_suppression_drive_panmictic_demo() {
         var total_dr = male_dr + female_dr;
         var total_rr = male_rr + female_rr;
         var total_rw = male_rw + female_rw;
-        var total_dR = male_dR + female_dR;
+        /*var total_dR = male_dR + female_dR;
         var total_Rr = male_Rr + female_Rr;
         var total_Rw = male_Rw + female_Rw;
-        var total_RR = male_RR + female_RR;
+        var total_RR = male_RR + female_RR;*/
         var total_has_d = male_has_d + female_has_d;
         var total_has_r = male_has_r + female_has_r;
-        var total_has_R = male_has_R + female_has_R;
+        //var total_has_R = male_has_R + female_has_R;
         var rate_dd = (0.0 + total_dd) / population_size;
         var rate_dw = (0.0 + total_dw) / population_size;
         var rate_ww = (0.0 + total_ww) / population_size;
         var rate_dr = (0.0 + total_dr) / population_size;
         var rate_rr = (0.0 + total_rr) / population_size;
         var rate_rw = (0.0 + total_rw) / population_size;
-        var rate_dR = (0.0 + total_dR) / population_size;
+        /*var rate_dR = (0.0 + total_dR) / population_size;
         var rate_Rr = (0.0 + total_Rr) / population_size;
         var rate_Rw = (0.0 + total_Rw) / population_size;
-        var rate_RR = (0.0 + total_RR) / population_size;
-        var rate_d = (total_dd + 0.5 * total_dw + 0.5 * total_dr + 0.5 * total_dR) / population_size;
-        var rate_w = (total_ww + 0.5 * total_dw + 0.5 * total_rw + 0.5 * total_Rw) / population_size;
-        var rate_r = (total_rr + 0.5 * total_dr + 0.5 * total_rw + 0.5 * total_Rr) / population_size;
-        var rate_R = (total_RR + 0.5 * total_dR + 0.5 * total_Rw + 0.5 * total_Rr) / population_size;
+        var rate_RR = (0.0 + total_RR) / population_size;*/
+        var rate_d = (total_dd + 0.5 * total_dw + 0.5 * total_dr) / population_size;
+        var rate_w = (total_ww + 0.5 * total_dw + 0.5 * total_rw) / population_size;
+        var rate_r = (total_rr + 0.5 * total_dr + 0.5 * total_rw) / population_size;
+        //var rate_R = (total_RR + 0.5 * total_dR + 0.5 * total_Rw + 0.5 * total_Rr) / population_size;
         var rate_has_d = (0.0 + total_has_d) / population_size;
         var rate_has_r = (0.0 + total_has_r) / population_size;
-        var rate_has_R = (0.0 + total_has_R) / population_size;
+        //var rate_has_R = (0.0 + total_has_R) / population_size;
 
         var output_obj = {
             "generation": cyc,
@@ -323,72 +289,71 @@ function homing_suppression_drive_panmictic_demo() {
             "male_dr": male_dr,
             "male_rr": male_rr,
             "male_rw": male_rw,
-            "male_dR": male_dR,
+            /*"male_dR": male_dR,
             "male_Rr": male_Rr,
             "male_Rw": male_Rw,
-            "male_RR": male_RR,
+            "male_RR": male_RR,*/
             "male_has_d": male_has_d,
             "male_has_r": male_has_r,
-            "male_has_R": male_has_R,
+            //"male_has_R": male_has_R,
             "female_dd": female_dd,
             "female_dw": female_dw,
             "female_ww": female_ww,
             "female_dr": female_dr,
             "female_rr": female_rr,
             "female_rw": female_rw,
-            "female_dR": female_dR,
+            /*"female_dR": female_dR,
             "female_Rr": female_Rr,
             "female_Rw": female_Rw,
-            "female_RR": female_RR,
+            "female_RR": female_RR,*/
             "female_has_d": female_has_d,
             "female_has_r": female_has_r,
-            "female_has_R": female_has_R,
+            //"female_has_R": female_has_R,
             "total_dd": total_dd,
             "total_dw": total_dw,
             "total_ww": total_ww,
             "total_dr": total_dr,
             "total_rr": total_rr,
             "total_rw": total_rw,
-            "total_dR": total_dR,
+            /*"total_dR": total_dR,
             "total_Rr": total_Rr,
             "total_Rw": total_Rw,
-            "total_RR": total_RR,
+            "total_RR": total_RR,*/
             "total_has_d": total_has_d,
             "total_has_r": total_has_r,
-            "total_has_R": total_has_R,
+            //"total_has_R": total_has_R,
             "rate_dd": rate_dd,
             "rate_dw": rate_dw,
             "rate_ww": rate_ww,
             "rate_dr": rate_dr,
             "rate_rr": rate_rr,
             "rate_rw": rate_rw,
-            "rate_dR": rate_dR,
+            /*"rate_dR": rate_dR,
             "rate_Rr": rate_Rr,
             "rate_Rw": rate_Rw,
-            "rate_RR": rate_RR,
+            "rate_RR": rate_RR,*/
             "rate_d": rate_d,
             "rate_w": rate_w,
             "rate_r": rate_r,
-            "rate_R": rate_R,
+            //"rate_R": rate_R,
             "rate_has_d": rate_has_d,
-            "rate_has_r": rate_has_r,
-            "rate_has_R": rate_has_R,
+            "rate_has_r": rate_has_r
+                //"rate_has_R": rate_has_R,
         }
         stats.push(output_obj);
 
         let out = JSON.stringify(output_obj);
 
         console.log(out);
-        append_output(hsdp_output, out + "<br>");
+        append_output(ridd_output, out + "<br>");
 
         // add data to chart
         setTimeout(() => {
-            homing_supp_pan_chart.data.labels.push(output_obj["generation"]);
-            homing_supp_pan_chart.data.datasets[0].data.push((0.0 + output_obj["population_size"]) / capacity);
-            homing_supp_pan_chart.data.datasets[1].data.push(output_obj["rate_d"]);
-            homing_supp_pan_chart.data.datasets[2].data.push(output_obj["rate_r"]);
-            homing_supp_pan_chart.data.datasets[3].data.push(output_obj["rate_R"]);
-            homing_supp_pan_chart.update();
+            ridd_pan_chart.data.labels.push(output_obj["generation"]);
+            ridd_pan_chart.data.datasets[0].data.push((0.0 + output_obj["population_size"]) / capacity);
+            ridd_pan_chart.data.datasets[1].data.push(output_obj["rate_d"]);
+            ridd_pan_chart.data.datasets[2].data.push(output_obj["rate_r"]);
+            ridd_pan_chart.update();
         }, 100);
 
 
@@ -407,32 +372,35 @@ function homing_suppression_drive_panmictic_demo() {
     function main() {
         initialize_population();
         output_stats();
-        release_drive_carriers();
-        for (cyc = 1; cyc <= max_generations; cyc++) {
+
+        for (cyc = 1; cyc <= max_weeks; cyc++) {
+            release_drive_carriers(); // release every generation
             if (exit_flag) {
                 break;
             }
-            population_size = get_population_size();
+            female_population_size = population.female.length;
             // console.log("ok get size");
             mature();
             // console.log("ok mature");
             for (var j in population.female) {
                 var mate = select_mate();
                 // console.log("ok selection");
-                next_generation(population.female[j], mate);
+                if (!is_sterile(j)) {
+                    next_generation(population.female[j], mate);
+                }
             }
             death();
             output_stats();
         }
         if (exit_flag == 1) {
             console.log("End of simulation: Suppressed");
-            append_output(hsdp_output, "End of simulation: Suppressed" + "<br>");
+            append_output(ridd_output, "End of simulation: Suppressed" + "<br>");
         } else if (exit_flag == 2) {
             console.log("End of simulation: Drive lost");
-            append_output(hsdp_output, "End of simulation: Drive lost" + "<br>");
+            append_output(ridd_output, "End of simulation: Drive lost" + "<br>");
         } else {
             console.log("End of simulation: Long");
-            append_output(hsdp_output, "End of simulation: Long" + "<br>");
+            append_output(ridd_output, "End of simulation: Long" + "<br>");
         }
         return;
     }
