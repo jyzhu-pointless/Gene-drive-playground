@@ -25,6 +25,8 @@ function ridl_drive_panmictic_demo() {
     var drive_fitness = document.getElementById("ridd-fit").value;
     var max_attempts_to_find_a_mate = 10;
     var egg_num_per_female = 50;
+    var density_dependent_growth_curve = document.getElementById("ridd-curve").value;
+    var rescue_strategy = document.getElementById("ridd-rescue").value;
     var max_generations = 100;
     var cyc = 0;
     var exit_flag = 0;
@@ -131,11 +133,38 @@ function ridl_drive_panmictic_demo() {
         if (is_sterile(male_ind)) return;
 
         // console.log("not_sterile");
-        var fecundity = fitness(female_ind) * low_density_growth_rate / (((low_density_growth_rate - 1.0) * population_size / capacity) + 1.0);
+
+        var fecundity = 0.0;
+        var competition_ratio = population_size / capacity;
+
+        if (density_dependent_growth_curve == "Concave") {
+            fecundity = fitness(female_ind) * low_density_growth_rate / (((low_density_growth_rate - 1.0) * competition_ratio) + 1.0);
+        } else if (density_dependent_growth_curve == "Linear") {
+            fecundity = fitness(female_ind) * (-competition_ratio * (low_density_growth_rate - 1.0) + low_density_growth_rate);
+        } else if (density_dependent_growth_curve == "Convex") {
+            fecundity = fitness(female_ind) * (-(low_density_growth_rate - 1.0) * (competition_ratio - 1.0) * (competition_ratio + 1.0) + 1.0);
+        }
 
         for (var i = 0; i < egg_num_per_female; i++) {
             var newborn = cross(female_ind, male_ind);
             if (fecundity / 25.0 >= Math.random()) {
+                // if rescue, do not create lethal individuals
+                // (1) if haplolethal drive:
+                if (rescue_strategy == "Haplolethal") {
+                    if (newborn.genotype == "dr" || newborn.genotype == "r+" || newborn.genotype == "rr") {
+                        // do not create resistance carriers
+                        continue;
+                    }
+                }
+
+                // (2) if recessive lethal drive
+                if (rescue_strategy == "Recessive lethal") {
+                    if (newborn.genotype == "rr") {
+                        // do not create resistance homozygotes
+                        continue;
+                    }
+                }
+
                 if (newborn.sex == "male") {
                     population.male.push(newborn);
                 } else {
