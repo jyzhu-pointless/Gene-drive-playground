@@ -80,7 +80,7 @@ function homing_suppression_drive_panmictic_demo() {
     // Parameters
     population = { male: [], female: [] };
     var capacity = document.getElementById("hsdp-capacity").value;
-    var release_size = capacity * document.getElementById("hsdp-drop").value;
+    var release_size = capacity / 2 * document.getElementById("hsdp-drop").value;
     var low_density_growth_rate = document.getElementById("hsdp-ldgr").value;
     var drive_efficiency = document.getElementById("hsdp-dcr").value;
     var resistance_2_formation_rate_if_not_converted = document.getElementById("hsdp-r2").value; // if not converted

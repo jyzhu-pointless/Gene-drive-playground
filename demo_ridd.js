@@ -17,7 +17,7 @@ function ridl_drive_panmictic_demo() {
     // Parameters
     population = { male: [], female: [] };
     var capacity = document.getElementById("ridd-capacity").value;
-    var release_size = capacity * document.getElementById("ridd-drop").value;
+    var release_size = capacity / 2 * document.getElementById("ridd-drop").value;
     var low_density_growth_rate = document.getElementById("ridd-ldgr").value;
     var drive_efficiency = document.getElementById("ridd-dcr").value;
     var resistance_2_formation_rate_if_not_converted = document.getElementById("ridd-r2").value; // if not converted
