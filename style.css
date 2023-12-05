@@ -1,7 +1,26 @@
-.locator {
+/*
+    Style settings for anchors before the title
+    Thanks to ChatGPT for help
+*/
+
+.anchor-link {
     color: white;
+    position: absolute;
+    left: -30px;
 }
 
-.locator :hover {
+.anchor-link::before {
+    content: "#";
+    margin-right: 5px;
+}
+
+.anchor-link :hover {
     color: #007bff;
+}
+
+h2 {
+    display: flex;
+    align-items: center;
+    position: relative;
+    /* 让标题相对定位，以便链接使用绝对定位 */
 }

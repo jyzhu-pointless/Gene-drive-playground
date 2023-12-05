@@ -37,7 +37,8 @@
     </div>
 
     <div class="container pt-3">
-        <h2 id="hsdp-title"><a class="locator" href="#hsdp-title">#</a> Female sterile homing drive - panmictic discrete generation model</h2>
+        <h2 id="hsdp-title">
+            <a class="anchor-link" href="#hsdp-title"></a> Female sterile homing drive - panmictic discrete generation model</h2>
         <div class="d-md-flex flex-md-row">
             <div class="p-2 align-self-sm-center">
                 <canvas id="homing_suppression_drive_panmictic_demo_chart" width=300 height=300></canvas>
@@ -174,7 +175,8 @@
     </div>
 
     <div class="container pt-3">
-        <h2 id="ridd-title"><a class="locator" href="#ridd-title">#</a> RIDL-drive (RIDDLE) - panmictic discrete generation model</h2>
+        <h2 id="ridd-title">
+            <a class="anchor-link" href="#ridd-title"></a> RIDL-drive (RIDDLE) - panmictic discrete generation model</h2>
         <div class="d-md-flex flex-md-row">
             <div class="p-2 align-self-sm-center">
                 <canvas id="ridl_drive_panmictic_demo_chart" width=300 height=300></canvas>
@@ -303,18 +305,6 @@
                                             <option>1.0</option>
                                         </select>
                                     </div>
-                                    <!--
-                                    <div class="col-lg-4 col-md-8">
-                                        <label for="ridd-curve" class="col-form-label">Density-dependent growth curve</label>
-                                    </div>
-                                    <div class="col-lg-2 col-md-4">
-                                        <select id="ridd-curve" class="form-select form-control">
-                                            <option selected>Concave</option>
-                                            <option>Linear</option>
-                                            <option>Convex</option>
-                                        </select>
-                                    </div>
-                                    -->
                                     <div class="col-lg-4 col-md-8">
                                         <label for="ridd-rescue" class="col-form-label">Rescue strategy</label>
                                     </div>
@@ -328,6 +318,7 @@
                                 </div>
                                 <div class="pt-2">
                                     <button class="btn btn-success" id="ridd-run" onclick="ridl_drive_panmictic_demo()">Run simulation</button>
+                                    <!--<button class="btn btn-primary" id="ridd-run" onclick="undefined">Download results</button>-->
                                 </div>
                             </div>
                             <div class="tab-pane " id="ridd-references">
@@ -355,9 +346,12 @@
 
 </body>
 
-<script src="./chart_config_hsdp.js"></script>
+<!-- Model demonstration scripts -->
 <script src="./demo_hsdp.js"></script>
-<script src="./chart_config_ridd.js"></script>
 <script src="./demo_ridd.js"></script>
+
+<!-- Chart.js configuration scripts -->
+<script src="./chart_config_hsdp.js"></script>
+<script src="./chart_config_ridd.js"></script>
 
 </html>

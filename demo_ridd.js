@@ -41,7 +41,8 @@ function ridl_drive_panmictic_demo() {
         "drive_fitness": drive_fitness,
         "max_attempts_to_find_a_mate": max_attempts_to_find_a_mate,
         "egg_num_per_female": egg_num_per_female,
-        "max_generations": max_generations
+        "max_generations": max_generations,
+        "rescue_strategy": rescue_strategy
     })
     console.log(out);
     append_output(ridd_output, out + "<br>");
