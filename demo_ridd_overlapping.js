@@ -1,4 +1,5 @@
 // A web framework for gene drive simulations
+// allowing overlapping generations of mosquitoes
 // author: Jinyu Zhu
 
 function ridl_drive_overlapping_panmictic_demo() {
@@ -6,27 +7,27 @@ function ridl_drive_overlapping_panmictic_demo() {
     // Clear output
     // Clear plot
     setTimeout(() => {
-        ridd_output.innerHTML = "";
-        ridd_pan_chart.data.labels = [];
-        ridd_pan_chart.data.datasets.forEach(dataset => {
+        ridd_overlapping_output.innerHTML = "";
+        ridd_overlapping_pan_chart.data.labels = [];
+        ridd_overlapping_pan_chart.data.datasets.forEach(dataset => {
             dataset.data = [];
         });
-        ridd_pan_chart.update();
+        ridd_overlapping_pan_chart.update();
     }, 100);
 
     // Parameters
     population = { male: [], female: [] };
-    var capacity = document.getElementById("ridd-capacity").value;
-    var release_size = capacity * document.getElementById("ridd-drop").value;
-    var low_density_growth_rate = document.getElementById("ridd-ldgr").value;
-    var drive_efficiency = document.getElementById("ridd-dcr").value;
-    var resistance_2_formation_rate_if_not_converted = document.getElementById("ridd-r2").value; // if not converted
+    var capacity = document.getElementById("ridd-overlapping-capacity").value;
+    var release_size = capacity * document.getElementById("ridd-overlapping-drop").value;
+    var low_density_growth_rate = document.getElementById("ridd-overlapping-ldgr").value;
+    var drive_efficiency = document.getElementById("ridd-overlapping-dcr").value;
+    var resistance_2_formation_rate_if_not_converted = document.getElementById("ridd-overlapping-r2").value; // if not converted
     // var resistance_1_formation_rate_if_not_resistance_2 = 0.01; // if not to r2
-    var drive_fitness = document.getElementById("ridd-fit").value;
+    var drive_fitness = document.getElementById("ridd-overlapping-fit").value;
     var max_attempts_to_find_a_mate = 10;
     var egg_num_per_female = 50;
-    var density_dependent_growth_curve = document.getElementById("ridd-curve").value;
-    var rescue_strategy = document.getElementById("ridd-rescue").value;
+    var density_dependent_growth_curve = document.getElementById("ridd-overlapping-curve").value;
+    var rescue_strategy = document.getElementById("ridd-overlapping-rescue").value;
     var max_weeks = 317;
     var cyc = 0;
     var exit_flag = 0;
@@ -47,7 +48,7 @@ function ridl_drive_overlapping_panmictic_demo() {
         "max_weeks": max_weeks
     })
     console.log(out);
-    append_output(ridd_output, out + "<br>");
+    append_output(ridd_overlapping_output, out + "<br>");
 
     function initialize_population() {
         for (var i = 1; i <= capacity / 2; i++) {
